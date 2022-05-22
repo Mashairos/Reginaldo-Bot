@@ -1,6 +1,7 @@
 import json
 import aiohttp
 import typing
+import asyncio
 
 with open("info.json", encoding='utf-8') as meu_json:
     Token = json.load(meu_json)
@@ -42,15 +43,6 @@ async def send_hello(ctx):
 async def dm(ctx):
     await ctx.author.send("Quem ousa retirar-me de meu descanso?")
 
-@bot.command()
-async def say(ctx, *, question):
-    await ctx.message.delete()
-    await ctx.send(f'{question}')
-
-@bot.command()
-async def clear(ctx, amount : int):
-    await ctx.channel.purge(limit=amount+1)
-
 @bot.event
 async def on_member_join(member):
     await member.send(f'Olá, mortal {member.name}. Bem vindo ao servidor!')
@@ -71,6 +63,16 @@ async def cargo(ctx):
 
     global msg_id
     msg_id = botmsg.id
+
+@bot.command(name="say")
+async def say(ctx, *, question):
+    await ctx.message.delete()
+    await ctx.send(f'{question}')
+
+@bot.command(name="clear")
+async def clear(ctx, amount : int):
+    await ctx.channel.purge(limit=amount+1)
+
 
 @bot.event
 async def on_reaction_add(reaction, user):
@@ -225,6 +227,28 @@ async def reddit(ctx, red):
                 res = await r.json()
                 embed.set_image(url=res['data']['children'][random.randint(1, 25)]['data']['url'])
                 await ctx.send(embed=embed)
+
+@bot.command(name='spam')
+async def spam(ctx, member: discord.Member, amount:int, *, message):
+    for i in range(amount):
+        await asyncio.sleep(1)
+        await member.send(message)
+    
+@bot.command(name='kisspam')
+async def kisspam(ctx, member: discord.Member, amount:int):
+    embed = discord.Embed(title="...", description=f'{ctx.author.mention} beijou você {member.mention}') 
+    for i in range(amount):
+        await asyncio.sleep(1)
+        embed.set_image(url=(random.choice(links.kiss_gifs)))
+        await ctx.send(embed=embed)
+
+@bot.command(name='spiderS')
+async def spiderS(ctx, member: discord.Member, amount:int):
+    embed = discord.Embed(title="...", description=f'Aranhinha >;3') 
+    for i in range(amount):
+        await asyncio.sleep(1)
+        embed.set_image(url=(random.choice(links.spider_gifs)))
+        await member.send(embed=embed)
 
 @tasks.loop(seconds=180)
 async def change_S():
